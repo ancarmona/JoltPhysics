@@ -11,7 +11,13 @@ standard library names Jolt uses come from a small subset that NativeCoreLibrary
 
 ## Patches to Jolt's sources
 
-**None.** Jolt compiles unchanged. These parts make that possible, and none of them is in this repository:
+One, on ARM only (one commit):
+
+| File | Change | Reason |
+|---|---|---|
+| `Jolt/Math/Vec3.inl`, `Vec4.inl`, `DVec3.inl` | `sFusedMultiplyAdd` on NEON: `vfmaq_f32` / `vfmaq_f64` instead of `vmlaq_f32` / `vmlaq_f64` | `vmlaq` is a multiply then an add; clang fuses it only with FP contraction on, which Surfbird's build turns off (`-ffp-contract=off`). Jolt's CMake turns contraction on for ARM instead, but contraction then also fuses every other `a * b + c` of the source, Surfbird's own code included, and the results differ from x86. `vfmaq` fuses only here, like `_mm_fmadd_ps` on x86. Without it, `TestDifferenceOfProducts` fails on ARM |
+
+Otherwise Jolt compiles unchanged. These parts make that possible, and none of them is in this repository:
 
 | Need | Where it is met |
 |---|---|
@@ -34,8 +40,8 @@ This branch adds files only, all of them in `Surfbird/`:
 
 ## Taking a new upstream version
 
-1. `git fetch upstream && git merge upstream/master` on `surfbird`. No upstream file is changed, so there is nothing to
-   resolve.
+1. `git fetch upstream && git merge upstream/master` on `surfbird`. Only the patch above changes upstream files: resolve it if
+   upstream changed those lines.
 2. Run `python Surfbird/check_std_symbols.py --shim <Surfbird>/Source/Core/Std/Include`. If it reports a new `std::` name
    or header, add it to the shim (in NativeCoreLibrary), then run the script again with `--update`.
 3. Check `Jolt/Jolt.cmake` for new or removed source files and for new optional modules. Update the `exclude` list in
