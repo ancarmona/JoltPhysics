@@ -3,11 +3,11 @@
 This is the `surfbird` branch of `ancarmona/JoltPhysics`, a fork of `jrouwe/JoltPhysics`. Surfbird (a custom VR engine)
 compiles Jolt in its own build: clang 20, C++23, no C++ standard library (`-nostdinc`), no exceptions, no RTTI. The
 standard library names Jolt uses come from a small subset that NativeCoreLibrary implements (its std shim,
-`Source/Core/Std/Include` in Surfbird). This choice is decision D33 of the Birdwatcher project (route B).
+`Source/Core/Std/Include` in Surfbird). This choice is decision D33 of the Birdwatcher project (route B), taken again by Surfbird's T62 (2026-11-17).
 
 ## Base
 
-- Upstream commit: `57d9e2a4` (2026-11-06, "Fixed a race condition in JobSystemWithBarrier (#2206)"). Jolt 5.6.1.
+- Upstream tag `v5.7.0` (`cf16769b`, "Bump to v5.7.0"), merged on 2026-11-17. Before it: `57d9e2a4` (Jolt 5.6.1).
 
 ## Patches to Jolt's sources
 
@@ -46,8 +46,7 @@ This branch adds files only, all of them in `Surfbird/`:
    or header, add it to the shim (in NativeCoreLibrary), then run the script again with `--update`.
 3. Check `Jolt/Jolt.cmake` for new or removed source files and for new optional modules. Update the `exclude` list in
    Surfbird's `Source/Surfbird/Jolt/Module.json` and `EXCLUDE` in the script, so that the two stay the same.
-4. Build Surfbird (`python Tools/winbuild.py`). Then run `SurfbirdPhysicsTests` (Checked and Unchecked) and
-   `Tools/Tests/test_physics.py`.
+4. Build Surfbird and run its tests (`python build.py --test`), in Checked and Unchecked.
 
 If a source patch ever becomes necessary, keep it small, add it here (file, reason, upstream issue), and make each patch its
 own commit, so that a merge shows it.
